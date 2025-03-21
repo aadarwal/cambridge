@@ -12,20 +12,14 @@ const Emoji = ({ symbol, className = '' }) => (
 );
 
 export default function Home() {
-  // Fixed default states
+  // Since we're using NoSSR in _app.js, we can be confident we're always on the client here
   const [darkMode, setDarkMode] = useState(false);
   const [activeCategory, setActiveCategory] = useState('all');
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showMap, setShowMap] = useState(false);
-  
-  // Important: Use a simpler approach for hydration
-  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    // Mark as client-side rendered
-    setIsClient(true);
-    
     // Check system preference for dark mode safely
     try {
       if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -60,25 +54,6 @@ export default function Home() {
   const handleBackClick = () => {
     setSelectedLocation(null);
   };
-
-  // Render a skeleton UI while on server or during hydration
-  const loadingContent = (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <Head>
-        <title>Cambridge Explorer: Philosophy & Physics</title>
-        <meta name="description" content="Interactive guide to philosophy and physics sites in Cambridge" />
-      </Head>
-      <div className="p-4 max-w-md text-center">
-        <h1 className="text-2xl font-bold mb-2">Cambridge Explorer</h1>
-        <p>Loading...</p>
-      </div>
-    </div>
-  );
-
-  // Render the full UI only after client-side hydration
-  if (!isClient) {
-    return loadingContent;
-  }
 
   return (
     <div className={clsx('min-h-screen transition-colors duration-300', {
@@ -328,7 +303,7 @@ export default function Home() {
                           // Determine color based on category
                           let color;
                           const category = cambridgeData.categories.find(c => c.id === location.category);
-                          color = category.color.replace('bg-', '').replace('-700', '-500');
+                          color = category ? category.color.replace('bg-', '').replace('-700', '-500') : 'gray-500';
                           
                           return (
                             <g 
