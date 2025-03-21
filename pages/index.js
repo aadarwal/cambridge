@@ -12,20 +12,27 @@ const Emoji = ({ symbol, className = '' }) => (
 );
 
 export default function Home() {
+  // Fixed default states
   const [darkMode, setDarkMode] = useState(false);
   const [activeCategory, setActiveCategory] = useState('all');
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showMap, setShowMap] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  
+  // Important: Use a simpler approach for hydration
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    // Mark component as mounted to safely use browser APIs
-    setMounted(true);
+    // Mark as client-side rendered
+    setIsClient(true);
     
-    // Check system preference for dark mode
-    if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setDarkMode(true);
+    // Check system preference for dark mode safely
+    try {
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        setDarkMode(true);
+      }
+    } catch (e) {
+      console.error('Error checking dark mode preference:', e);
     }
   }, []);
 
@@ -43,8 +50,10 @@ export default function Home() {
 
   const handleLocationClick = (location) => {
     setSelectedLocation(location);
-    if (typeof window !== 'undefined') {
+    try {
       window.scrollTo(0, 0);
+    } catch (e) {
+      console.error('Error scrolling to top:', e);
     }
   };
 
@@ -52,19 +61,23 @@ export default function Home() {
     setSelectedLocation(null);
   };
 
-  // Early server-side render with minimal content to avoid hydration issues
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <Head>
-          <title>Cambridge Explorer: Philosophy & Physics</title>
-        </Head>
-        <div className="p-4 max-w-md text-center">
-          <h1 className="text-2xl font-bold mb-2">Cambridge Explorer</h1>
-          <p>Loading...</p>
-        </div>
+  // Render a skeleton UI while on server or during hydration
+  const loadingContent = (
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <Head>
+        <title>Cambridge Explorer: Philosophy & Physics</title>
+        <meta name="description" content="Interactive guide to philosophy and physics sites in Cambridge" />
+      </Head>
+      <div className="p-4 max-w-md text-center">
+        <h1 className="text-2xl font-bold mb-2">Cambridge Explorer</h1>
+        <p>Loading...</p>
       </div>
-    );
+    </div>
+  );
+
+  // Render the full UI only after client-side hydration
+  if (!isClient) {
+    return loadingContent;
   }
 
   return (

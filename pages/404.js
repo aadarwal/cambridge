@@ -6,29 +6,39 @@ import Head from 'next/head';
 
 export default function Custom404() {
   const [darkMode, setDarkMode] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    // Check system preference for dark mode
-    if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setDarkMode(true);
+    // Mark as client-side rendered
+    setIsClient(true);
+    
+    // Check system preference for dark mode safely
+    try {
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        setDarkMode(true);
+      }
+    } catch (e) {
+      console.error('Error checking dark mode preference:', e);
     }
   }, []);
 
-  // Early server-side render with minimal content to avoid hydration issues
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <Head>
-          <title>404 - Page Not Found | Cambridge Explorer</title>
-        </Head>
-        <div className="p-4 max-w-md text-center">
-          <h1 className="text-2xl font-bold mb-2">404</h1>
-          <p>Loading...</p>
-        </div>
+  // Show a simplified version during server rendering
+  const loadingContent = (
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <Head>
+        <title>404 - Page Not Found | Cambridge Explorer</title>
+        <meta name="description" content="Page not found - Cambridge Explorer" />
+      </Head>
+      <div className="p-4 max-w-md text-center">
+        <h1 className="text-2xl font-bold mb-2">404</h1>
+        <p>Page Not Found</p>
       </div>
-    );
+    </div>
+  );
+
+  // If we haven't yet mounted on the client, show a simple version
+  if (!isClient) {
+    return loadingContent;
   }
 
   return (

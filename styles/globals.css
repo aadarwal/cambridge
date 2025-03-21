@@ -16,6 +16,8 @@ body {
 /* Fix for dark mode */
 .dark {
   color-scheme: dark;
+  background-color: #121416;
+  color: #ffffff;
 }
 
 /* Create custom Scale animation */
@@ -42,13 +44,17 @@ body {
   display: inline-block;
 }
 
-/* Explicitly set colors for light/dark modes to avoid Vercel issues */
+/* Explicitly set background and text colors for common states */
 .bg-dark-900 {
   background-color: #121416 !important;
 }
 
 .bg-dark-800 {
   background-color: #1e2023 !important;
+}
+
+.bg-dark-700 {
+  background-color: #2d3035 !important;
 }
 
 .bg-gray-100 {
@@ -65,6 +71,35 @@ body {
 
 .text-gray-900 {
   color: #111827 !important;
+}
+
+.text-gray-600 {
+  color: #4b5563 !important;
+}
+
+.text-gray-500 {
+  color: #6b7280 !important;
+}
+
+.text-gray-400 {
+  color: #9ca3af !important;
+}
+
+.text-gray-300 {
+  color: #d1d5db !important;
+}
+
+/* Primary color for buttons and highlights */
+.bg-primary-600 {
+  background-color: #2563eb !important;
+}
+
+.bg-primary-700 {
+  background-color: #1d4ed8 !important;
+}
+
+.text-primary-600 {
+  color: #2563eb !important;
 }
 
 /* Scrollbar styling */
@@ -97,4 +132,19 @@ body {
 
 .dark ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.3);
+}
+
+/* Default light and dark mode styles for the initial render */
+:root {
+  color-scheme: light;
+  background-color: #f3f4f6; 
+  color: #111827;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    background-color: #121416;
+    color: #ffffff;
+  }
 } 

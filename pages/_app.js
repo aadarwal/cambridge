@@ -3,22 +3,18 @@ import Head from 'next/head';
 import { useEffect, useState } from 'react';
 
 function MyApp({ Component, pageProps }) {
-  const [mounted, setMounted] = useState(false);
-
+  const [isMounted, setIsMounted] = useState(false);
+  
   useEffect(() => {
-    // Mark component as mounted
-    setMounted(true);
+    // Force a re-render after component mounts to fix hydration issues
+    setIsMounted(true);
     
-    // Fix for potential Next.js hydration issues
-    if (typeof window !== 'undefined') {
-      // Force a re-render to fix any class mismatches
-      document.body.className = document.body.className;
+    // Apply any necessary client-side only operations
+    if (typeof document !== 'undefined') {
+      // Apply a known className to body to ensure consistent rendering
+      document.body.className = document.body.className || 'js-enabled';
     }
   }, []);
-
-  // Optional: Return minimal UI while not mounted to avoid hydration issues
-  // This is a safety fallback but usually not needed since pages have their own
-  // mounted checks
   
   return (
     <>
@@ -28,6 +24,7 @@ function MyApp({ Component, pageProps }) {
         <link rel="icon" href="/favicon.ico" />
         <title>Cambridge Explorer: Philosophy & Physics</title>
       </Head>
+      {/* Render Component regardless of mounted state, individual pages will handle their own mounted checks */}
       <Component {...pageProps} />
     </>
   );
