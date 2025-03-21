@@ -1,0 +1,357 @@
+import { useState, useEffect } from 'react';
+import Head from 'next/head';
+import { MagnifyingGlassIcon, MoonIcon, SunIcon, MapIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
+import { cambridgeData } from '../data/cambridgeData';
+import clsx from 'clsx';
+
+export default function Home() {
+  const [darkMode, setDarkMode] = useState(false);
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showMap, setShowMap] = useState(false);
+
+  useEffect(() => {
+    // Check system preference for dark mode
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      setDarkMode(true);
+    }
+  }, []);
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
+  const filteredLocations = cambridgeData.locations.filter(location => {
+    const matchesCategory = activeCategory === 'all' || location.category === activeCategory;
+    const matchesSearch = searchTerm === '' || 
+      location.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      location.description.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
+  const handleLocationClick = (location) => {
+    setSelectedLocation(location);
+    window.scrollTo(0, 0);
+  };
+
+  const handleBackClick = () => {
+    setSelectedLocation(null);
+  };
+
+  return (
+    <div className={clsx('min-h-screen transition-colors duration-200', {
+      'dark bg-dark-900 text-white': darkMode,
+      'bg-gray-100 text-gray-900': !darkMode
+    })}>
+      <Head>
+        <title>Cambridge Explorer: Philosophy & Physics</title>
+        <meta name="description" content="Interactive guide to philosophy and physics sites in Cambridge" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
+      <div className="container mx-auto px-4 py-6 max-w-4xl">
+        <header className="mb-6">
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-2xl font-bold">Cambridge Explorer</h1>
+            <div className="flex space-x-2">
+              <button 
+                onClick={() => setShowMap(!showMap)}
+                className={clsx('p-2 rounded-full', {
+                  'bg-dark-800 text-white': darkMode && showMap,
+                  'bg-gray-200 text-dark-900': darkMode && !showMap,
+                  'bg-primary-100 text-primary-800': !darkMode && showMap,
+                  'bg-white text-gray-800': !darkMode && !showMap
+                })}
+                aria-label="Toggle map view"
+              >
+                <MapIcon className="h-5 w-5" />
+              </button>
+              <button 
+                onClick={toggleDarkMode}
+                className={clsx('p-2 rounded-full', {
+                  'bg-dark-800 text-white': darkMode,
+                  'bg-white text-gray-800': !darkMode
+                })}
+                aria-label="Toggle dark mode"
+              >
+                {darkMode ? <SunIcon className="h-5 w-5" /> : <MoonIcon className="h-5 w-5" />}
+              </button>
+            </div>
+          </div>
+          
+          <div className="relative mb-4">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+            </div>
+            <input
+              type="text"
+              className={clsx('w-full pl-10 pr-4 py-2 rounded-lg', {
+                'bg-dark-800 text-white placeholder-gray-400 border-gray-700': darkMode,
+                'bg-white text-gray-900 placeholder-gray-500 border-gray-300': !darkMode
+              })}
+              placeholder="Search locations..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+
+          <div className="flex overflow-x-auto pb-2 gap-2">
+            <button
+              className={clsx('px-3 py-1 rounded-full whitespace-nowrap', {
+                'bg-primary-600 text-white': activeCategory === 'all',
+                'bg-dark-800 text-gray-200 hover:bg-dark-700': darkMode && activeCategory !== 'all',
+                'bg-white text-gray-800 hover:bg-gray-100': !darkMode && activeCategory !== 'all'
+              })}
+              onClick={() => setActiveCategory('all')}
+            >
+              All Sites
+            </button>
+            {cambridgeData.categories.map(category => (
+              <button
+                key={category.id}
+                className={clsx('px-3 py-1 rounded-full whitespace-nowrap flex items-center', {
+                  'text-white': activeCategory === category.id,
+                  'bg-dark-800 text-gray-200 hover:bg-dark-700': darkMode && activeCategory !== category.id,
+                  'bg-white text-gray-800 hover:bg-gray-100': !darkMode && activeCategory !== category.id,
+                  [category.color]: activeCategory === category.id
+                })}
+                onClick={() => setActiveCategory(category.id)}
+              >
+                <span className="mr-1">{category.emoji}</span> {category.title}
+              </button>
+            ))}
+          </div>
+        </header>
+
+        <main>
+          {selectedLocation ? (
+            <div className={clsx('rounded-lg overflow-hidden mb-6', {
+              'bg-dark-800': darkMode,
+              'bg-white shadow': !darkMode
+            })}>
+              <div className={clsx('p-4 border-b', {
+                'border-gray-700': darkMode,
+                'border-gray-200': !darkMode
+              })}>
+                <div className="flex justify-between items-center">
+                  <h2 className="text-xl font-bold flex items-center">
+                    <span className="mr-2">{selectedLocation.emoji}</span> {selectedLocation.name}
+                  </h2>
+                  <button
+                    className={clsx('px-3 py-1 rounded', {
+                      'bg-dark-900 text-gray-300 hover:bg-gray-700': darkMode,
+                      'bg-gray-200 text-gray-700 hover:bg-gray-300': !darkMode
+                    })}
+                    onClick={handleBackClick}
+                  >
+                    Back
+                  </button>
+                </div>
+                <p className="text-sm mt-1">
+                  {selectedLocation.location} • {selectedLocation.access}
+                </p>
+              </div>
+              
+              <div className="p-4">
+                <div className={clsx('mb-4 p-3 rounded-lg', {
+                  'bg-dark-900': darkMode,
+                  'bg-gray-100': !darkMode
+                })}>
+                  <h3 className="font-medium flex items-center">
+                    <InformationCircleIcon className="h-5 w-5 mr-1 text-primary-600" />
+                    About this Location
+                  </h3>
+                  <p className="mt-1">{selectedLocation.description}</p>
+                  {selectedLocation.details.significance && (
+                    <p className="mt-2">{selectedLocation.details.significance}</p>
+                  )}
+                  {selectedLocation.details.hours && (
+                    <p className="mt-2"><strong>Hours:</strong> {selectedLocation.details.hours}</p>
+                  )}
+                  {selectedLocation.details.duration && (
+                    <p className="mt-2"><strong>Duration:</strong> {selectedLocation.details.duration}</p>
+                  )}
+                  {selectedLocation.details.best_time && (
+                    <p className="mt-2"><strong>Best Time:</strong> {selectedLocation.details.best_time}</p>
+                  )}
+                </div>
+                
+                <h3 className="font-medium mb-2">What to Know</h3>
+                <ul className="space-y-2">
+                  {selectedLocation.details.notes.map((note, i) => (
+                    <li key={i} className="flex">
+                      <span className="mr-2 text-primary-600">•</span>
+                      <span>{note}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ) : (
+            <div>
+              {!showMap ? (
+                <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
+                  {filteredLocations.map(location => (
+                    <div
+                      key={location.id}
+                      className={clsx('rounded-lg overflow-hidden cursor-pointer transition-transform transform hover:scale-102', {
+                        'bg-dark-800 hover:bg-dark-700': darkMode,
+                        'bg-white shadow hover:shadow-md': !darkMode
+                      })}
+                      onClick={() => handleLocationClick(location)}
+                    >
+                      <div className="p-4">
+                        <div className="flex items-start">
+                          <span className="text-2xl mr-3">{location.emoji}</span>
+                          <div>
+                            <h2 className="font-medium">{location.name}</h2>
+                            <p className={clsx('text-sm', {
+                              'text-gray-300': darkMode,
+                              'text-gray-600': !darkMode
+                            })}>
+                              {location.description}
+                            </p>
+                            <p className={clsx('text-xs mt-1', {
+                              'text-gray-400': darkMode,
+                              'text-gray-500': !darkMode
+                            })}>
+                              {location.location} • {location.access}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className={clsx('rounded-lg overflow-hidden p-4 relative', {
+                  'bg-dark-800': darkMode,
+                  'bg-white shadow': !darkMode
+                })}>
+                  <div className="h-96 relative">
+                    <div className="absolute inset-0">
+                      {/* Simplified Cambridge map */}
+                      <svg width="100%" height="100%" viewBox="0 0 800 600" className={clsx('rounded-lg', {
+                        'bg-dark-900': darkMode,
+                        'bg-gray-100': !darkMode
+                      })}>
+                        {/* River Cam */}
+                        <path d="M350,50 Q400,300 350,550" stroke="#6EA4D3" strokeWidth="20" fill="none" />
+                        
+                        {/* Main streets */}
+                        <path d="M100,300 L700,300" stroke={darkMode ? "#444" : "#ccc"} strokeWidth="10" fill="none" />
+                        <path d="M400,100 L400,500" stroke={darkMode ? "#444" : "#ccc"} strokeWidth="10" fill="none" />
+                        <path d="M200,150 L600,450" stroke={darkMode ? "#333" : "#ddd"} strokeWidth="5" fill="none" />
+                        <path d="M200,450 L600,150" stroke={darkMode ? "#333" : "#ddd"} strokeWidth="5" fill="none" />
+                        
+                        {/* Central Cambridge */}
+                        <rect x="320" y="220" width="160" height="160" fill={darkMode ? "#555" : "#e2e8f0"} rx="5" />
+                        <text x="400" y="300" fontSize="12" textAnchor="middle" fill={darkMode ? "#aaa" : "#666"} fontWeight="bold">
+                          CITY CENTER
+                        </text>
+                        
+                        {/* Location markers */}
+                        {filteredLocations.map((location) => {
+                          // Position markers based on location type
+                          let x, y;
+                          if (location.id === 'wittgenstein-room' || location.id === 'russell-rooms' || location.id === 'wren-library' || location.id === 'newton-apple-tree') {
+                            // Trinity College area
+                            x = 370 + (Math.random() * 30);
+                            y = 270 + (Math.random() * 30);
+                          } else if (location.id === 'cavendish-laboratory') {
+                            // West Cambridge
+                            x = 150 + (Math.random() * 50);
+                            y = 200 + (Math.random() * 50);
+                          } else if (location.id === 'wittgenstein-grave') {
+                            // North Cambridge
+                            x = 300 + (Math.random() * 50);
+                            y = 100 + (Math.random() * 50);
+                          } else if (location.id === 'computing-history') {
+                            // East Cambridge
+                            x = 600 + (Math.random() * 50);
+                            y = 300 + (Math.random() * 50);
+                          } else if (location.id === 'fitzwilliam-museum' || location.id === 'corpus-clock') {
+                            // South Cambridge
+                            x = 400 + (Math.random() * 50);
+                            y = 450 + (Math.random() * 50);
+                          } else if (location.id === 'botanic-garden') {
+                            // South Cambridge
+                            x = 450 + (Math.random() * 50);
+                            y = 500 + (Math.random() * 50);
+                          } else {
+                            // Random position in central area
+                            x = 320 + (Math.random() * 160);
+                            y = 220 + (Math.random() * 160);
+                          }
+                          
+                          // Determine color based on category
+                          let color;
+                          const category = cambridgeData.categories.find(c => c.id === location.category);
+                          color = category.color.replace('bg-', '').replace('-700', '-500');
+                          
+                          return (
+                            <g 
+                              key={location.id}
+                              onClick={() => handleLocationClick(location)}
+                              className="cursor-pointer"
+                            >
+                              <circle 
+                                cx={x} 
+                                cy={y} 
+                                r="10" 
+                                fill={color}
+                                stroke={darkMode ? "#fff" : "#fff"} 
+                                strokeWidth="2"
+                              />
+                              <text 
+                                x={x} 
+                                y={y + 25} 
+                                fontSize="10" 
+                                textAnchor="middle" 
+                                fill={darkMode ? "#ddd" : "#333"} 
+                                fontWeight="bold"
+                              >
+                                {location.name.length > 20 ? location.name.substring(0, 18) + "..." : location.name}
+                              </text>
+                            </g>
+                          );
+                        })}
+                        
+                        {/* North indicator */}
+                        <g transform="translate(750, 70)">
+                          <circle r="20" fill={darkMode ? "#333" : "#f8fafc"} stroke={darkMode ? "#666" : "#cbd5e1"} strokeWidth="2" />
+                          <text x="0" y="0" fontSize="14" textAnchor="middle" dominantBaseline="middle" fill={darkMode ? "#ddd" : "#475569"}>N</text>
+                        </g>
+                      </svg>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4">
+                    <h3 className="font-medium mb-2">Click a location for details</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {cambridgeData.categories.map(category => (
+                        <div key={category.id} className="flex items-center text-sm">
+                          <div className={`w-3 h-3 rounded-full mr-1 ${category.color.replace('700', '500')}`}></div>
+                          <span>{category.title}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </main>
+
+        <footer className={clsx('mt-8 pt-4 text-center text-sm', {
+          'text-gray-400 border-t border-gray-800': darkMode,
+          'text-gray-500 border-t border-gray-200': !darkMode
+        })}>
+          <p>Cambridge Explorer: Philosophy & Physics Guide</p>
+          <p className="mt-1">Created for exploring the rich academic heritage of Cambridge</p>
+        </footer>
+      </div>
+    </div>
+  );
+} 
