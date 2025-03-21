@@ -4,19 +4,33 @@ import { MagnifyingGlassIcon, MoonIcon, SunIcon, MapIcon, InformationCircleIcon 
 import { cambridgeData } from '../data/cambridgeData';
 import clsx from 'clsx';
 
+// Custom Emoji component to ensure proper rendering
+const Emoji = ({ symbol, className = '' }) => (
+  <span className={`emoji ${className}`} role="img" aria-label={symbol}>
+    {symbol}
+  </span>
+);
+
 export default function Home() {
   const [darkMode, setDarkMode] = useState(false);
   const [activeCategory, setActiveCategory] = useState('all');
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showMap, setShowMap] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     // Check system preference for dark mode
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
       setDarkMode(true);
     }
   }, []);
+
+  // Guard against hydration mismatch
+  if (!mounted) {
+    return null;
+  }
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -40,28 +54,27 @@ export default function Home() {
   };
 
   return (
-    <div className={clsx('min-h-screen transition-colors duration-200', {
+    <div className={clsx('min-h-screen transition-colors duration-300', {
       'dark bg-dark-900 text-white': darkMode,
       'bg-gray-100 text-gray-900': !darkMode
     })}>
       <Head>
         <title>Cambridge Explorer: Philosophy & Physics</title>
         <meta name="description" content="Interactive guide to philosophy and physics sites in Cambridge" />
-        <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <div className="container mx-auto px-4 py-6 max-w-4xl">
-        <header className="mb-6">
+        <header className="mb-6 rounded-lg bg-white dark:bg-dark-800 shadow-md p-4">
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-2xl font-bold">Cambridge Explorer</h1>
             <div className="flex space-x-2">
               <button 
                 onClick={() => setShowMap(!showMap)}
-                className={clsx('p-2 rounded-full', {
+                className={clsx('p-2 rounded-full transition-colors duration-200', {
                   'bg-dark-800 text-white': darkMode && showMap,
-                  'bg-gray-200 text-dark-900': darkMode && !showMap,
-                  'bg-primary-100 text-primary-800': !darkMode && showMap,
-                  'bg-white text-gray-800': !darkMode && !showMap
+                  'bg-gray-200 text-dark-900 hover:bg-gray-300': darkMode && !showMap,
+                  'bg-primary-100 text-primary-800 hover:bg-primary-200': !darkMode && showMap,
+                  'bg-white text-gray-800 hover:bg-gray-100 shadow': !darkMode && !showMap
                 })}
                 aria-label="Toggle map view"
               >
@@ -69,9 +82,9 @@ export default function Home() {
               </button>
               <button 
                 onClick={toggleDarkMode}
-                className={clsx('p-2 rounded-full', {
-                  'bg-dark-800 text-white': darkMode,
-                  'bg-white text-gray-800': !darkMode
+                className={clsx('p-2 rounded-full transition-colors duration-200', {
+                  'bg-dark-800 text-yellow-400 hover:bg-dark-700': darkMode,
+                  'bg-white text-gray-800 hover:bg-gray-100 shadow': !darkMode
                 })}
                 aria-label="Toggle dark mode"
               >
@@ -86,9 +99,9 @@ export default function Home() {
             </div>
             <input
               type="text"
-              className={clsx('w-full pl-10 pr-4 py-2 rounded-lg', {
-                'bg-dark-800 text-white placeholder-gray-400 border-gray-700': darkMode,
-                'bg-white text-gray-900 placeholder-gray-500 border-gray-300': !darkMode
+              className={clsx('w-full pl-10 pr-4 py-2 rounded-lg border focus:ring-2 transition duration-200', {
+                'bg-dark-800 text-white placeholder-gray-400 border-gray-700 focus:ring-primary-600 focus:border-transparent': darkMode,
+                'bg-white text-gray-900 placeholder-gray-500 border-gray-300 focus:ring-primary-500 focus:border-transparent shadow-sm': !darkMode
               })}
               placeholder="Search locations..."
               value={searchTerm}
@@ -96,12 +109,12 @@ export default function Home() {
             />
           </div>
 
-          <div className="flex overflow-x-auto pb-2 gap-2">
+          <div className="flex overflow-x-auto pb-2 gap-2 scrollbar-thin">
             <button
-              className={clsx('px-3 py-1 rounded-full whitespace-nowrap', {
-                'bg-primary-600 text-white': activeCategory === 'all',
+              className={clsx('px-3 py-1 rounded-full whitespace-nowrap transition-colors duration-200', {
+                'bg-primary-600 text-white hover:bg-primary-700': activeCategory === 'all',
                 'bg-dark-800 text-gray-200 hover:bg-dark-700': darkMode && activeCategory !== 'all',
-                'bg-white text-gray-800 hover:bg-gray-100': !darkMode && activeCategory !== 'all'
+                'bg-white text-gray-800 hover:bg-gray-100 shadow-sm': !darkMode && activeCategory !== 'all'
               })}
               onClick={() => setActiveCategory('all')}
             >
@@ -110,15 +123,15 @@ export default function Home() {
             {cambridgeData.categories.map(category => (
               <button
                 key={category.id}
-                className={clsx('px-3 py-1 rounded-full whitespace-nowrap flex items-center', {
-                  'text-white': activeCategory === category.id,
+                className={clsx('px-3 py-1 rounded-full whitespace-nowrap flex items-center transition-colors duration-200', {
+                  'text-white shadow-md': activeCategory === category.id,
                   'bg-dark-800 text-gray-200 hover:bg-dark-700': darkMode && activeCategory !== category.id,
-                  'bg-white text-gray-800 hover:bg-gray-100': !darkMode && activeCategory !== category.id,
+                  'bg-white text-gray-800 hover:bg-gray-100 shadow-sm': !darkMode && activeCategory !== category.id,
                   [category.color]: activeCategory === category.id
                 })}
                 onClick={() => setActiveCategory(category.id)}
               >
-                <span className="mr-1">{category.emoji}</span> {category.title}
+                <Emoji symbol={category.emoji} className="mr-1" /> {category.title}
               </button>
             ))}
           </div>
@@ -126,9 +139,9 @@ export default function Home() {
 
         <main>
           {selectedLocation ? (
-            <div className={clsx('rounded-lg overflow-hidden mb-6', {
+            <div className={clsx('rounded-lg overflow-hidden mb-6 shadow-lg transition-all duration-300', {
               'bg-dark-800': darkMode,
-              'bg-white shadow': !darkMode
+              'bg-white': !darkMode
             })}>
               <div className={clsx('p-4 border-b', {
                 'border-gray-700': darkMode,
@@ -136,10 +149,10 @@ export default function Home() {
               })}>
                 <div className="flex justify-between items-center">
                   <h2 className="text-xl font-bold flex items-center">
-                    <span className="mr-2">{selectedLocation.emoji}</span> {selectedLocation.name}
+                    <Emoji symbol={selectedLocation.emoji} className="mr-2 text-2xl" /> {selectedLocation.name}
                   </h2>
                   <button
-                    className={clsx('px-3 py-1 rounded', {
+                    className={clsx('px-3 py-1 rounded transition-colors duration-200', {
                       'bg-dark-900 text-gray-300 hover:bg-gray-700': darkMode,
                       'bg-gray-200 text-gray-700 hover:bg-gray-300': !darkMode
                     })}
@@ -154,17 +167,17 @@ export default function Home() {
               </div>
               
               <div className="p-4">
-                <div className={clsx('mb-4 p-3 rounded-lg', {
+                <div className={clsx('mb-4 p-4 rounded-lg shadow-inner', {
                   'bg-dark-900': darkMode,
                   'bg-gray-100': !darkMode
                 })}>
-                  <h3 className="font-medium flex items-center">
-                    <InformationCircleIcon className="h-5 w-5 mr-1 text-primary-600" />
+                  <h3 className="font-medium flex items-center text-lg">
+                    <InformationCircleIcon className="h-5 w-5 mr-2 text-primary-600" />
                     About this Location
                   </h3>
-                  <p className="mt-1">{selectedLocation.description}</p>
+                  <p className="mt-2">{selectedLocation.description}</p>
                   {selectedLocation.details.significance && (
-                    <p className="mt-2">{selectedLocation.details.significance}</p>
+                    <p className="mt-2 italic">{selectedLocation.details.significance}</p>
                   )}
                   {selectedLocation.details.hours && (
                     <p className="mt-2"><strong>Hours:</strong> {selectedLocation.details.hours}</p>
@@ -177,11 +190,11 @@ export default function Home() {
                   )}
                 </div>
                 
-                <h3 className="font-medium mb-2">What to Know</h3>
-                <ul className="space-y-2">
+                <h3 className="font-medium mb-3 text-lg border-b pb-2 border-gray-200 dark:border-gray-700">What to Know</h3>
+                <ul className="space-y-2 pl-1">
                   {selectedLocation.details.notes.map((note, i) => (
                     <li key={i} className="flex">
-                      <span className="mr-2 text-primary-600">•</span>
+                      <span className="mr-2 text-primary-600 flex-shrink-0">•</span>
                       <span>{note}</span>
                     </li>
                   ))}
@@ -195,15 +208,15 @@ export default function Home() {
                   {filteredLocations.map(location => (
                     <div
                       key={location.id}
-                      className={clsx('rounded-lg overflow-hidden cursor-pointer transition-transform transform hover:scale-102', {
-                        'bg-dark-800 hover:bg-dark-700': darkMode,
-                        'bg-white shadow hover:shadow-md': !darkMode
+                      className={clsx('rounded-lg overflow-hidden cursor-pointer transition-all duration-300 shadow-md transform hover:scale-102', {
+                        'bg-dark-800 hover:bg-dark-700 hover:shadow-lg': darkMode,
+                        'bg-white hover:shadow-xl': !darkMode
                       })}
                       onClick={() => handleLocationClick(location)}
                     >
                       <div className="p-4">
                         <div className="flex items-start">
-                          <span className="text-2xl mr-3">{location.emoji}</span>
+                          <Emoji symbol={location.emoji} className="text-2xl mr-3 mt-1" />
                           <div>
                             <h2 className="font-medium">{location.name}</h2>
                             <p className={clsx('text-sm', {
@@ -225,11 +238,11 @@ export default function Home() {
                   ))}
                 </div>
               ) : (
-                <div className={clsx('rounded-lg overflow-hidden p-4 relative', {
+                <div className={clsx('rounded-lg overflow-hidden p-4 relative shadow-lg', {
                   'bg-dark-800': darkMode,
-                  'bg-white shadow': !darkMode
+                  'bg-white': !darkMode
                 })}>
-                  <div className="h-96 relative">
+                  <div className="h-[500px] relative rounded-lg overflow-hidden">
                     <div className="absolute inset-0">
                       {/* Simplified Cambridge map */}
                       <svg width="100%" height="100%" viewBox="0 0 800 600" className={clsx('rounded-lg', {
@@ -295,22 +308,37 @@ export default function Home() {
                               key={location.id}
                               onClick={() => handleLocationClick(location)}
                               className="cursor-pointer"
+                              style={{ transition: 'all 0.2s ease' }}
                             >
                               <circle 
                                 cx={x} 
                                 cy={y} 
-                                r="10" 
+                                r="12" 
                                 fill={color}
                                 stroke={darkMode ? "#fff" : "#fff"} 
                                 strokeWidth="2"
+                                className="drop-shadow-md"
                               />
                               <text 
                                 x={x} 
-                                y={y + 25} 
+                                y={y} 
+                                fontSize="10" 
+                                textAnchor="middle" 
+                                dominantBaseline="middle"
+                                fill="#fff" 
+                                fontWeight="bold"
+                              >
+                                {location.emoji.substring(0, 1)}
+                              </text>
+                              <text 
+                                x={x} 
+                                y={y + 30} 
                                 fontSize="10" 
                                 textAnchor="middle" 
                                 fill={darkMode ? "#ddd" : "#333"} 
                                 fontWeight="bold"
+                                className="drop-shadow-sm"
+                                style={{ textShadow: darkMode ? '0 0 3px rgba(0,0,0,0.8)' : '0 0 3px rgba(255,255,255,0.8)' }}
                               >
                                 {location.name.length > 20 ? location.name.substring(0, 18) + "..." : location.name}
                               </text>
@@ -328,11 +356,11 @@ export default function Home() {
                   </div>
                   
                   <div className="mt-4">
-                    <h3 className="font-medium mb-2">Click a location for details</h3>
-                    <div className="flex flex-wrap gap-2">
+                    <h3 className="font-medium mb-3 text-lg">Click a location for details</h3>
+                    <div className="flex flex-wrap gap-3">
                       {cambridgeData.categories.map(category => (
-                        <div key={category.id} className="flex items-center text-sm">
-                          <div className={`w-3 h-3 rounded-full mr-1 ${category.color.replace('700', '500')}`}></div>
+                        <div key={category.id} className="flex items-center text-sm bg-white dark:bg-dark-900 rounded-full px-3 py-1 shadow-sm">
+                          <div className={`w-3 h-3 rounded-full mr-2 ${category.color.replace('700', '500')}`}></div>
                           <span>{category.title}</span>
                         </div>
                       ))}

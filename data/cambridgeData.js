@@ -37,7 +37,7 @@ export const cambridgeData = {
       name: "Wittgenstein's Room",
       category: "philosophy",
       location: "Trinity College",
-      emoji: "🏛️",
+      emoji: "🧠",
       description: "Where Wittgenstein wrote \"Philosophical Investigations\"",
       access: "Check with porter's lodge; entrance fee",
       details: {
@@ -58,7 +58,7 @@ export const cambridgeData = {
       name: "Bertrand Russell's Rooms",
       category: "philosophy",
       location: "Trinity College",
-      emoji: "🏛️",
+      emoji: "🧠",
       description: "External viewing of where Russell worked on \"Principia Mathematica\"",
       access: "Viewable from courtyard",
       details: {
@@ -80,7 +80,7 @@ export const cambridgeData = {
       name: "Wittgenstein's Grave",
       category: "philosophy",
       location: "Ascension Burial Ground",
-      emoji: "⚰️",
+      emoji: "🪦",
       description: "Final resting place of the influential philosopher",
       access: "Public access; outside city center",
       details: {
@@ -147,7 +147,7 @@ export const cambridgeData = {
       name: "Christ's College",
       category: "philosophy",
       location: "St Andrew's Street",
-      emoji: "🏛️",
+      emoji: "🏫",
       description: "Home to the Cambridge Platonists",
       access: "Small entrance fee",
       details: {
@@ -170,7 +170,7 @@ export const cambridgeData = {
       name: "Faculty of Philosophy",
       category: "philosophy",
       location: "Sidgwick Avenue",
-      emoji: "🏫",
+      emoji: "🧠",
       description: "Academic department with Casimir Lewy Library",
       access: "Limited public access",
       details: {
@@ -193,7 +193,7 @@ export const cambridgeData = {
       name: "Cavendish Laboratory Museum",
       category: "physics",
       location: "JJ Thomson Avenue",
-      emoji: "🔬",
+      emoji: "⚛️",
       description: "Birthplace of numerous physics breakthroughs",
       access: "Check website for hours",
       details: {
@@ -245,7 +245,7 @@ export const cambridgeData = {
       name: "Newton's Apple Tree",
       category: "physics",
       location: "Trinity College",
-      emoji: "🌳",
+      emoji: "🍏",
       description: "Descendant of the tree that inspired gravity theory",
       access: "College entrance fee",
       details: {
@@ -269,7 +269,7 @@ export const cambridgeData = {
       name: "The Eagle Pub",
       category: "physics",
       location: "Benet Street",
-      emoji: "🍺",
+      emoji: "🧬",
       description: "Where DNA structure was announced",
       access: "Public; busy at lunch",
       details: {
@@ -395,7 +395,7 @@ export const cambridgeData = {
       name: "G. David Bookseller",
       category: "bookshops",
       location: "16 St Edward's Passage",
-      emoji: "📚",
+      emoji: "📜",
       description: "Rare and antiquarian books",
       access: "Mon-Sat 10am-5:30pm",
       details: {
@@ -420,7 +420,7 @@ export const cambridgeData = {
       name: "Sarah Key's Haunted Bookshop",
       category: "bookshops",
       location: "9 St Edward's Passage",
-      emoji: "📚",
+      emoji: "👻",
       description: "Antiquarian books in haunted building",
       access: "Tue-Sat 10am-5pm",
       details: {
@@ -445,7 +445,7 @@ export const cambridgeData = {
       name: "Oxfam Bookshop",
       category: "bookshops",
       location: "28 Sidney Street",
-      emoji: "📚",
+      emoji: "📖",
       description: "Second-hand academic books",
       access: "Mon-Sat 9am-5:30pm, Sun 11am-5pm",
       details: {
@@ -549,7 +549,7 @@ export const cambridgeData = {
       name: "The Round Church",
       category: "activities",
       location: "Round Church Street",
-      emoji: "👻",
+      emoji: "⛪",
       description: "One of only four round churches in England",
       access: "Small fee; Mon-Sat 10am-5pm, limited hours Sunday",
       details: {
@@ -601,7 +601,7 @@ export const cambridgeData = {
       name: "Cambridge Market",
       category: "other",
       location: "Market Square",
-      emoji: "🏛️",
+      emoji: "🛍️",
       description: "Historic market with food stalls",
       access: "Daily 10am-4pm",
       details: {
