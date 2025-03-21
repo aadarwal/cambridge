@@ -2,22 +2,44 @@ import Link from 'next/link';
 import { HomeIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import { useState, useEffect } from 'react';
+import Head from 'next/head';
 
 export default function Custom404() {
   const [darkMode, setDarkMode] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     // Check system preference for dark mode
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
       setDarkMode(true);
     }
   }, []);
+
+  // Early server-side render with minimal content to avoid hydration issues
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <Head>
+          <title>404 - Page Not Found | Cambridge Explorer</title>
+        </Head>
+        <div className="p-4 max-w-md text-center">
+          <h1 className="text-2xl font-bold mb-2">404</h1>
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={clsx('min-h-screen flex flex-col items-center justify-center p-6', {
       'dark bg-dark-900 text-white': darkMode,
       'bg-gray-100 text-gray-900': !darkMode
     })}>
+      <Head>
+        <title>404 - Page Not Found | Cambridge Explorer</title>
+        <meta name="description" content="Page not found - Cambridge Explorer" />
+      </Head>
       <div className="text-center">
         <h1 className="text-9xl font-bold text-primary-600">404</h1>
         <h2 className="text-2xl font-semibold mt-4">Page Not Found</h2>

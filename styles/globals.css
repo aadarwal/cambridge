@@ -42,6 +42,31 @@ body {
   display: inline-block;
 }
 
+/* Explicitly set colors for light/dark modes to avoid Vercel issues */
+.bg-dark-900 {
+  background-color: #121416 !important;
+}
+
+.bg-dark-800 {
+  background-color: #1e2023 !important;
+}
+
+.bg-gray-100 {
+  background-color: #f3f4f6 !important;
+}
+
+.bg-white {
+  background-color: #ffffff !important;
+}
+
+.text-white {
+  color: #ffffff !important;
+}
+
+.text-gray-900 {
+  color: #111827 !important;
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;

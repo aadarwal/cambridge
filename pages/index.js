@@ -20,17 +20,14 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // Mark component as mounted to safely use browser APIs
     setMounted(true);
+    
     // Check system preference for dark mode
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
       setDarkMode(true);
     }
   }, []);
-
-  // Guard against hydration mismatch
-  if (!mounted) {
-    return null;
-  }
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -46,12 +43,29 @@ export default function Home() {
 
   const handleLocationClick = (location) => {
     setSelectedLocation(location);
-    window.scrollTo(0, 0);
+    if (typeof window !== 'undefined') {
+      window.scrollTo(0, 0);
+    }
   };
 
   const handleBackClick = () => {
     setSelectedLocation(null);
   };
+
+  // Early server-side render with minimal content to avoid hydration issues
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <Head>
+          <title>Cambridge Explorer: Philosophy & Physics</title>
+        </Head>
+        <div className="p-4 max-w-md text-center">
+          <h1 className="text-2xl font-bold mb-2">Cambridge Explorer</h1>
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={clsx('min-h-screen transition-colors duration-300', {
